@@ -1,17 +1,26 @@
 body {
-    padding: $padding;
+    margin: 0;
     font-family: $font-family;
     font-size: $font-size;
+    color: $font-color;
+}
+
+html {
+    margin: 0;
 }
 
 a {
     color: #00b7ff;
 }
 
-.hidden {
-    display: none;
+.input-error {
+    outline: 1px solid red;
 }
 
-.invis {
-    visibility: hidden;
+.no-transition-on-load {
+    transition: none !important;
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    -o-transition: none !important;
 }
