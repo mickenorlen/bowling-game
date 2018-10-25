@@ -1,42 +1,42 @@
 .z-depth-0 {
-    box-shadow: $z-depth-0;
+  box-shadow: $z-depth-0;
 }
 
 .z-depth-1,
 .btn {
-    box-shadow: $z-depth-1;
+  box-shadow: $z-depth-1;
 }
 
 .z-depth-1-half,
 .btn:hover {
-    box-shadow: $z-depth-1-half;
+  box-shadow: $z-depth-1-half;
 }
 
 .z-depth-2 {
-    box-shadow: $z-depth-2;
+  box-shadow: $z-depth-2;
 }
 
 .z-depth-3 {
-    box-shadow: $z-depth-3;
+  box-shadow: $z-depth-3;
 }
 
 .z-depth-4 {
-    box-shadow: $z-depth-4;
+  box-shadow: $z-depth-4;
 }
 
 .z-depth-5 {
-    box-shadow: $z-depth-5;
+  box-shadow: $z-depth-5;
 }
 
 .hoverable,
 .hoverable-top {
-    transition: box-shadow 0.2s ease-out;
-    box-shadow: $z-depth-1;
+  transition: box-shadow 0.2s ease-out;
+  box-shadow: $z-depth-1;
 }
 
 .hoverable:hover {
-    box-shadow: $hover-shadow;
+  box-shadow: $hover-shadow;
 }
 .hoverable-top:hover {
-    box-shadow: $hover-shadow-top;
+  box-shadow: $hover-shadow-top;
 }

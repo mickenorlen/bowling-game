@@ -1,7 +1,7 @@
 // Style
 
 import '../styles/index.scss';
-import './on-load';
+import './utils/on-load';
 
 // JS/Vue
 import './vue/vue-init';

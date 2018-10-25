@@ -1,278 +1,216 @@
 <template>
+  <div class="table-wrapper">
     <table class="results-tables">
-        <div class="player-results" v-for="(player, index) in players" :key="index">
-            <h3 class="name">{{ player.name }}</h3>
-            <tbody v-for="n in getRowNr()" :key="n" class="results-table">
-                <tr>
-                    <th
-                        class="rounds"
-                        v-for="(round, i) in getLimit()"
-                        :key="i"
-                    >{{ getI(i, n) + 1 }}</th>
-                </tr>
-                <tr>
-                    <td class="subrounds" v-for="(round, i) in getLimit()" :key="i">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td>{{ renderShotResult(player, getI(i, n), 'first') }}</td>
-                                    <td>{{ renderShotResult(player, getI(i, n)) }}</td>
-                                    <!-- Handlebars template -->
-                                    <td
-                                        v-if="getI(i, n) === 9"
-                                    >{{ renderShotResult(player, getI(i, n), 'last') }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-                <tr>
+      <div class="player-results" v-for="(player, index) in players" :key="index">
+        <h3 class="name">{{ player.name }}</h3>
+        <tbody v-for="rowNr in getRowNrs()" :key="rowNr" ref="table" class="results-table">
+          <tr>
+            <th
+              class="rounds"
+              :class="{'second-row': getRowNrs() === 2 && rowNr === 2}"
+              v-for="colNr in getColNr()"
+              :key="colNr"
+            >{{ getShotNr(colNr, rowNr) }}</th>
+          </tr>
+          <tr>
+            <td
+              class="shots"
+              :class="{ 'last-col-first-row': getRowNrs() === 2 && getShotNr(colNr, rowNr) === 5 }"
+              v-for="(colNr) in getColNr()"
+              :key="colNr"
+            >
+              <table>
+                <tbody>
+                  <tr>
+                    <td>{{ renderShotResult(player, getShotNr(colNr, rowNr), 'first') }}</td>
+                    <td>{{ renderShotResult(player, getShotNr(colNr, rowNr)) }}</td>
+                    <!-- Handlebars template -->
                     <td
-                        class="round-results"
-                        v-for="(round, i) in getLimit()"
-                        :key="i"
-                    >{{ player.result[getI(i, n)] }}</td>
-                </tr>
-            </tbody>
-        </div>
-        <!-- Bottom wrapper -->
-        <div class="bottom-wrapper">
-            <transition name="fade">
-                <button
-                    v-if="!winnerMsg"
-                    id="play-round-btn"
-                    class="hoverable no-transition-on-load"
-                    @click="playRound"
-                >Play round</button>
-            </transition>
-            <transition name="fade">
-                <h1 class="winner-msg" v-if="winnerMsg">{{ winnerMsg }}</h1>
-            </transition>
-        </div>
+                      v-if="getShotNr(colNr, rowNr) === 10"
+                    >{{ renderShotResult(player, getShotNr(colNr, rowNr), 'last') }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td
+              class="round-results"
+              v-for="colNr in getColNr()"
+              :key="colNr"
+            >{{ player.result[getShotNr(colNr, rowNr) - 1] }}</td>
+          </tr>
+        </tbody>
+      </div>
+      <!-- Bottom wrapper -->
+      <div class="bottom-wrapper">
+        <transition name="fade">
+          <button
+            v-if="!winnerMsg"
+            id="make-shot-btn"
+            class="hoverable no-transition-on-load"
+            @click="makeShot"
+          >Play round</button>
+        </transition>
+        <transition name="fade">
+          <h2
+            :style="{ width: `${$refs.table[0].offsetWidth}px` }"
+            class="winner-msg"
+            v-if="winnerMsg"
+          >{{ winnerMsg }}</h2>
+        </transition>
+      </div>
     </table>
+  </div>
 </template>
 
 
 <script>
-import { playRound, getWinnerMsg, toInt } from '../../utils/bowlingUtils';
+import { makeShot, getWinnerMsg, toInt } from '../../utils/bowling';
 
 export default {
-    props: {
-        rounds: Number,
-        bgImg: { type: String, default: 'bowling.jpeg' },
+  props: {
+    rounds: Number,
+    bgImg: { type: String, default: 'bowling.jpeg' },
+  },
+  data() {
+    return {
+      // hej,
+      players: this.createPlayerObjs(),
+      shotIndex: 0,
+      winnerMsg: false, // Defined when game is over
+      pExtraShot: [], // Players who earned an extra shot in last round
+      windowWidth: window.innerWidth, // Pixel value when table row is split in two
+      splitRowPoint: 769,
+    };
+  },
+  mounted() {
+    this.$store.commit('setState', { bgImg: this.bgImg });
+    // Store window width for table row split
+    window.addEventListener('resize', () => {
+      this.windowWidth = window.innerWidth;
+    });
+  },
+  methods: {
+    /**
+     * @description Get the shot number, starting at 1
+     * @param {Number} colNr table column
+     * @param {Number} rowNr table row
+     */
+    getShotNr(colNr, rowNr) {
+      if (rowNr === 2) {
+        return colNr + this.rounds / 2;
+      }
+      return colNr;
     },
-    data() {
-        return {
-            players: this.createPlayerObjs(),
-            subRound: 0,
-            winnerMsg: false,
-            pExtraShot: [],
-            windowWidth: window.innerWidth,
-            splitRowPoint: 730,
-        };
+
+    /**
+     * @description Get the column number depending on windows size
+     */
+    getColNr() {
+      if (this.windowWidth < this.splitRowPoint) {
+        return this.rounds / 2;
+      }
+      return this.rounds;
     },
-    mounted() {
-        this.$store.commit('setState', { bgImg: this.bgImg });
-        this.$nextTick(() => {
-            window.addEventListener('resize', () => {
-                this.windowWidth = window.innerWidth;
-            });
-        });
+
+    /**
+     * @description Get the number of rows depending on windows size
+     */
+    getRowNrs() {
+      if (this.windowWidth < this.splitRowPoint) {
+        return 2;
+      }
+      return 1;
     },
-    methods: {
-        getI(i, n) {
-            if (n === 2) {
-                return i + this.rounds / 2;
-            }
-            return i;
-        },
-        getLimit() {
-            if (this.windowWidth < this.splitRowPoint) {
-                return this.rounds / 2;
-            }
-            return this.rounds;
-        },
-        getRowNr() {
-            if (this.windowWidth < this.splitRowPoint) {
-                return 2;
-            }
-            return 1;
-        },
-        playRound() {
-            playRound(this.players, this.subRound, this.rounds);
-            this.subRound += 1;
-            if (this.subRound === this.rounds * 2) {
-                this.checkExtraShot();
-            } else if (this.subRound === this.rounds * 2 + 1) {
-                playRound(this.pExtraShot, this.subRound, this.rounds);
-                this.winnerMsg = getWinnerMsg(this.players);
-            }
-        },
-        createPlayerObjs() {
-            const players = this.$store.state.players.map(player => ({
-                name: player.name,
-                result: Array(this.rounds).fill(''),
-                // Add 1 extra for last round
-                shotResult: Array(this.rounds * 2 + 1).fill(''),
-                totResult: 0,
-            }));
 
-            this.$store.state.players = players;
-            return players;
-        },
-        renderShotResult(player, i, position) {
-            const shotResI = (i + 1) * 2 - 2;
-            let shotRes;
+    /**
+     * @description Make shot for each player
+     */
+    makeShot() {
+      if (this.shotIndex === this.rounds * 2) {
+        // If very last shot, make shot with players who earned it and display winner
+        makeShot(this.pExtraShot, this.shotIndex, this.rounds);
+        this.winnerMsg = getWinnerMsg(this.players);
+      } else {
+        // Make shot with all players
+        makeShot(this.players, this.shotIndex, this.rounds);
+      }
+      this.shotIndex += 1;
 
-            if (position === 'first') shotRes = player.shotResult[shotResI];
-            else if (position === 'last') shotRes = player.shotResult[shotResI + 2];
-            else shotRes = player.shotResult[shotResI + 1];
-
-            if (position !== 'first' && shotRes + player.shotResult[shotResI] === 10 && player.shotResult[shotResI] !== 10) {
-                // If is second and (current shotres + prev shotres) = 10
-                // and first isn't 10 (can happen in last round when continue after strike)
-                shotRes = '/';
-            } else if (shotRes === 10) {
-                shotRes = 'X';
-            } else if (shotRes === 0) {
-                shotRes = String.fromCharCode(8211);
-            }
-            return shotRes;
-        },
-        checkExtraShot() {
-            this.players.forEach(p => {
-                if (p.shotResult[p.shotResult.length - 3] + toInt(p.shotResult[p.shotResult.length - 2]) >= 10) {
-                    this.pExtraShot.push(p);
-                }
-            });
-
-            if (!this.pExtraShot.length) {
-                this.winner = getWinnerMsg(this.players);
-            }
-        },
+      if (this.shotIndex === this.rounds * 2) {
+        // Check if anyone earned extra shot
+        this.checkExtraShot();
+      }
     },
+
+    /**
+     * @description Will recreate on load. Only player names are cached
+     */
+    createPlayerObjs() {
+      const players = this.$store.state.players.map(player => ({
+        name: player.name,
+        result: Array(this.rounds).fill(''),
+        // Add 1 extra for last round
+        shotResult: Array(this.rounds * 2 + 1).fill(''),
+        totResult: 0,
+      }));
+
+      this.$store.state.players = players;
+      return players;
+    },
+
+    /**
+     * @description Get and render shot result in correct table cell
+     * and translate relevant numbers to characters
+     * @param {Obj} player
+     * @param {Number} colNr
+     * @param {String} position
+     */
+    renderShotResult(player, colNr, position) {
+      const shotResI = colNr * 2 - 2; // Index of given shot result
+      let shotRes;
+
+      if (position === 'first') shotRes = player.shotResult[shotResI];
+      // Offset if last or middle cell
+      else if (position === 'last') shotRes = player.shotResult[shotResI + 2];
+      else shotRes = player.shotResult[shotResI + 1];
+
+      if (position !== 'first' && shotRes + player.shotResult[shotResI] === 10 && player.shotResult[shotResI] !== 10) {
+        // If is second and (current shotres + prev shotres) = 10
+        // and first isn't 10 (can happen in last round when continue after strike)
+        shotRes = '/';
+      } else if (shotRes === 10) {
+        shotRes = 'X';
+      } else if (shotRes === 0) {
+        shotRes = String.fromCharCode(8211);
+      }
+      return shotRes;
+    },
+
+    /**
+     * @description Check if any of the players earned an extra shot.
+     * If not, game over and render winner message
+     */
+    checkExtraShot() {
+      this.players.forEach(p => {
+        if (p.shotResult[p.shotResult.length - 3]
+          + toInt(p.shotResult[p.shotResult.length - 2])
+          >= 10) {
+          this.pExtraShot.push(p);
+        }
+      });
+
+      if (!this.pExtraShot.length) {
+        this.winnerMsg = getWinnerMsg(this.players);
+      }
+    },
+  },
 };
 </script>
 
 
 <style lang="scss" scoped>
 @import "../../../styles/_variables";
-
-.results-tables {
-    margin: $padding;
-
-    background-color: rgba(2, 31, 60, 0.5);
-    border-radius: 5px;
-    height: 80vh;
-    padding: 40px 60px;
-    position: relative;
-    border-spacing: 0;
-
-    .player-results {
-        h3.name {
-            margin-bottom: 0.4em;
-        }
-
-        .results-table {
-            position: relative;
-            text-align: center;
-            font-family: "monospace";
-
-            td.subrounds {
-                padding: 0;
-                background-color: $table-background-light;
-                color: $font-color-highlight;
-                border: $table-border-strong;
-                border-left: 0;
-                font-size: $font-size-small;
-                &:first-child {
-                    border-left: $table-border-strong;
-                }
-
-                table {
-                    border-spacing: 0;
-                    display: table-cell;
-                    td {
-                        min-width: $table-cell-width;
-                        height: $table-cell-height;
-                        padding: $table-cell-padding;
-                        padding-left: 0.5em;
-                        padding-right: 0.5em;
-                        &:nth-child(even),
-                        &:last-child {
-                            border-left: $table-border-light;
-                        }
-                    }
-                }
-
-                td {
-                    padding: 3px;
-                }
-            }
-
-            td.round-results {
-                text-align: center;
-                border-right: $table-border-strong;
-                border-bottom: $table-border-strong;
-                min-width: $table-cell-width;
-                height: $table-cell-height;
-                padding: $table-cell-padding;
-
-                &:first-child {
-                    border-left: $table-border-strong;
-                }
-            }
-        }
-    }
-
-    .bottom-wrapper {
-        position: relative;
-        text-align: right;
-        margin-top: 2em;
-        height: 3em;
-
-        .winner-msg,
-        button {
-            right: 0;
-            position: absolute;
-            display: inline-block;
-            margin: 0;
-        }
-
-        button#play-round-btn {
-            text-align: right;
-            padding: 1em 3em;
-            border-radius: 3px;
-            box-shadow: $z-depth-1;
-            background-color: $font-color;
-            border: 0;
-            color: $font-color-dark;
-            font-weight: bold;
-        }
-    }
-
-    // Media queries
-    @media (max-width: $screen-sm-max) {
-        margin: $padding / 2 auto;
-        font-size: $font-size * 0.7;
-        td.subrounds {
-            font-size: $font-size-small * 0.7 !important;
-        }
-        button#play-round-btn {
-            font-size: $font-size * 0.7;
-        }
-    }
-
-    @media (max-width: 380px) {
-        margin: 0 auto;
-        height: 100vh !important;
-        font-size: $font-size * 0.6;
-        td.subrounds {
-            font-size: $font-size-small * 0.6 !important;
-        }
-        button#play-round-btn {
-            font-size: $font-size * 0.6;
-        }
-    }
-}
+@import "../../../styles/_bowling";
 </style>

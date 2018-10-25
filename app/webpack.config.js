@@ -63,7 +63,14 @@ const webpackConf = {
             },
             {
                 test: /\.vue$/,
-                use: 'vue-loader',
+                use: {
+                    loader: 'vue-loader',
+                    options: {
+                        loaders: {
+                            js: 'babel-loader',
+                        },
+                    },
+                },
             },
             // {
             //     test: /\.css$/,

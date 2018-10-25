@@ -6,8 +6,8 @@
 </template>
 
 <style lang="scss" scoped>
-    .not-found {
-        margin: auto;
-        text-align: center;
-    }
+.not-found {
+  margin: auto;
+  text-align: center;
+}
 </style>

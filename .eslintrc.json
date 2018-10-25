@@ -20,7 +20,7 @@
     ],
     "rules": {
         "no-console": ["error", { "allow": ["info", "warn", "error"] }],
-        "indent": ["error", 4],
+        // "indent": ["error", 4],
         "arrow-parens": "off"
     }
 }

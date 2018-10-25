@@ -1,0 +1,145 @@
+.table-wrapper {
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  table.results-tables {
+    table-layout: fixed;
+    margin: $padding;
+
+    background-color: rgba(2, 31, 60, 0.5);
+    border-radius: 5px;
+    padding: $padding - 10px $padding + 10px;
+    position: relative;
+    border-spacing: 0;
+
+    .player-results {
+      h3.name {
+        margin-bottom: 0.4em;
+      }
+
+      .results-table {
+        position: relative;
+        text-align: center;
+        font-family: "monospace";
+
+        .rounds.second-row {
+          padding-top: 3px;
+        }
+
+        td.shots {
+          padding: 0;
+          background-color: $table-background-light;
+          color: $font-color-highlight;
+          border: $table-border-strong;
+          border-left: 0;
+          font-size: $font-size-small;
+          &:first-child {
+            border-left: $table-border-strong;
+          }
+
+          table {
+            border-spacing: 0;
+            display: table-cell;
+            td {
+              min-width: $table-cell-width;
+              height: $table-cell-height;
+              padding: $table-cell-padding;
+              padding-left: 0.5em;
+              padding-right: 0.5em;
+              &:nth-child(even),
+              &:last-child {
+                border-left: $table-border-light;
+              }
+            }
+          }
+
+          td {
+            padding: 3px;
+          }
+
+          &.last-col-first-row {
+            td {
+              min-width: $table-cell-width * 1.5;
+              padding: $table-cell-padding $table-cell-padding * 1.5;
+            }
+          }
+        }
+
+        td.round-results {
+          text-align: center;
+          border-right: $table-border-strong;
+          border-bottom: $table-border-strong;
+          min-width: $table-cell-width;
+          height: $table-cell-height;
+          padding: $table-cell-padding;
+
+          &:first-child {
+            border-left: $table-border-strong;
+          }
+        }
+      }
+    }
+
+    .bottom-wrapper {
+      position: relative;
+      text-align: right;
+      margin-top: 2em;
+      min-height: 3em;
+
+      .winner-msg,
+      button {
+        right: 0;
+        position: absolute;
+        display: inline-block;
+        margin: 0;
+      }
+
+      .winner-msg {
+        display: inline-block;
+        position: relative;
+        padding-bottom: 5px;
+      }
+
+      button#make-shot-btn {
+        text-align: right;
+        padding: 1em 3em;
+        border-radius: 3px;
+        box-shadow: $z-depth-1;
+        background-color: $font-color;
+        border: 0;
+        color: $font-color-dark;
+        font-weight: bold;
+      }
+    }
+
+    // Media queries
+    @media (max-width: $screen-sm-max) {
+      margin: $padding / 2 auto;
+      font-size: $font-size * 0.7;
+      td.shots {
+        font-size: $font-size-small * 0.7 !important;
+      }
+      button#play-round-btn {
+        font-size: $font-size * 0.7;
+      }
+    }
+
+    @media (max-width: 500px) {
+      overflow-x: auto;
+      margin: 10px auto;
+      // height: 100%;
+      padding: 10px;
+      font-size: $font-size * 0.6;
+      td.shots {
+        font-size: $font-size-small * 0.6 !important;
+      }
+      button#make-shot-btn {
+        font-size: $font-size * 0.6;
+      }
+    }
+  }
+  @media (max-width: $screen-xs-max) {
+    overflow-x: auto;
+  }
+}
