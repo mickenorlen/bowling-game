@@ -1,4 +1,3 @@
-// import webpack from 'webpack';
 import path from 'path';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { VueLoaderPlugin } from 'vue-loader';
@@ -72,20 +71,11 @@ const webpackConf = {
           },
         },
       },
-      // {
-      //     test: /\.css$/,
-      //     use: ['vue-style-loader', 'css-loader', 'postcss-loader'],
-      // },
     ],
   },
   optimization: {
     minimizer: [new UglifyJsPlugin()],
   },
-  // resolve: {
-  //     alias: {
-  //         vue: 'vue/dist/vue.js',
-  //     },
-  // },
 };
 
 // Development overrides

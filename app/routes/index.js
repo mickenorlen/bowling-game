@@ -2,7 +2,7 @@ import express from 'express';
 
 const router = express.Router();
 
-/* GET home page. */
+/* Redirect all to app page. */
 router.get('*', (req, res) => {
     res.render('index');
 });

@@ -1,5 +1,4 @@
 // Style
-
 import '../styles/index.scss';
 import './utils/on-load';
 
