@@ -3,3 +3,5 @@ app/public/build
 yarn-error.log
 app/yarn-error.log
 coverage
+docker/home
+app/docker/home
