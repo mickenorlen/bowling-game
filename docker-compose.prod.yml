@@ -1,6 +1,8 @@
-web:
-  container_name: "${APP_NAME}_prod_web"
-  environment:
-    - APP_ENV=production
-  restart: always
+version: '3.5'
+services:
+  web:
+    container_name: "${APP_NAME}_prod_web"
+    environment:
+      - APP_ENV=production
+    restart: always
 

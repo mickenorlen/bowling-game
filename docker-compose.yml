@@ -1,21 +1,29 @@
-web:
-  image: ${BUILD_IMAGE}
-  user: "${CURRENT_UID}" # Set in docker.sh
-  volumes:
-    - "./app:/src/app"
-    - "./node_modules/:/src/app/node_modules"
-    - "./package.json:/src/app/package.json"
-    - "./yarn.lock:/src/app/yarn.lock"
-    - "./docker/startup.sh:/src/app/startup.sh"
-    - "/etc/passwd:/etc/passwd"
-  ports:
+version: '3.5'
+services:
+  web:
+    image: ${BUILD_IMAGE}
+    user: "${CURRENT_UID}" # Set in docker.sh
+    volumes:
+      - "./app:/src/app"
+      - "./node_modules/:/src/app/node_modules"
+      - "./package.json:/src/app/package.json"
+      - "./yarn.lock:/src/app/yarn.lock"
+      - "./docker/startup.sh:/src/app/startup.sh"
+      - "/etc/passwd:/etc/passwd"
+    ports:
       - "${PORTS}"
-  working_dir: /src/app
-  command: "sh -c ./startup.sh"
-  environment:
-    - HOME=/src/app/docker/home
-    - CURRENT_UID=${CURRENT_UID}
-    - VIRTUAL_HOST=bowling.sharetransition.com
-    - VIRTUAL_PORT=3000
-    - LETSENCRYPT_HOST=bowling.sharetransition.com
-    - LETSENCRYPT_EMAIL=micke@sharetransition.com
+    expose:
+      - "3000"
+    working_dir: /src/app
+    command: "sh -c ./startup.sh"
+    environment:
+      - HOME=/src/app/docker/home
+      - CURRENT_UID=${CURRENT_UID}
+      - VIRTUAL_HOST=bowling.sharetransition.com
+      - LETSENCRYPT_HOST=bowling.sharetransition.com
+      - LETSENCRYPT_EMAIL=micke@sharetransition.com
+
+networks:
+  default:
+    external:
+      name: nginx-proxy

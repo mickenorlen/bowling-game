@@ -1,4 +1,6 @@
-web:
-  container_name: "${APP_NAME}_dev_web"
-  environment:
-    - APP_ENV=development
+version: '3.5'
+services:
+  web:
+    container_name: "${APP_NAME}_dev_web"
+    environment:
+      - APP_ENV=development
