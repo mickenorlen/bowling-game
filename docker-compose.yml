@@ -19,11 +19,3 @@ services:
     environment:
       - HOME=/src/app/docker/home
       - CURRENT_UID=${CURRENT_UID}
-      - VIRTUAL_HOST=bowling.sharetransition.com
-      - LETSENCRYPT_HOST=bowling.sharetransition.com
-      - LETSENCRYPT_EMAIL=micke@sharetransition.com
-
-networks:
-  default:
-    external:
-      name: nginx-proxy
